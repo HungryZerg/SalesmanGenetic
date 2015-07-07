@@ -250,7 +250,8 @@ void MainWindow::restart(){
     }
 
     ui->citiesPlot->replot();
-    drawPath(ui->listView->selectionModel()->selection());
+    if(ui->listView->selectionModel()->selection().count() != 0)
+        drawPath(ui->listView->selectionModel()->selection());
     //ui->listView->clearSelection();
 
     ui->statPlot->graph(0)->clearData();
