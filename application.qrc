@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/images">
         <file>save.png</file>
         <file>open.png</file>
         <file>roll.png</file>

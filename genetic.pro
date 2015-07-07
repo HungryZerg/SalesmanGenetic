@@ -30,3 +30,5 @@ FORMS    += mainwindow.ui
 
 RESOURCES += \
     application.qrc
+
+QMAKE_LFLAGS += -static -static-libgcc

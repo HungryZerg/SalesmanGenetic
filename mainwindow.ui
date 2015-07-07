@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>701</width>
-    <height>574</height>
+    <width>711</width>
+    <height>661</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -52,10 +52,24 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,1,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,1,0,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
+        <item>
+         <widget class="QPushButton" name="repopulateButton">
+          <property name="text">
+           <string>Restart</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6">
           <item>
@@ -87,14 +101,46 @@
             <item>
              <widget class="QSpinBox" name="tournamentSpinBox">
               <property name="minimum">
-               <number>2</number>
+               <number>1</number>
               </property>
              </widget>
             </item>
            </layout>
           </item>
           <item>
-           <widget class="QComboBox" name="comboBox"/>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <widget class="QLabel" name="mutTypeLabel">
+              <property name="text">
+               <string>Mutations type</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="mutTypeComboBox">
+              <item>
+               <property name="text">
+                <string>Inversion</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Insertion</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Swap two</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Swap three</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -128,7 +174,7 @@
             <item>
              <widget class="QLabel" name="stepLabel">
               <property name="text">
-               <string>Step, generations</string>
+               <string>Run generations</string>
               </property>
              </widget>
             </item>
@@ -189,13 +235,13 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>701</width>
-     <height>18</height>
+     <width>711</width>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Cities</string>
     </property>
     <addaction name="actionRandom_Initialization"/>
     <addaction name="actionLoad"/>

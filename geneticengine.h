@@ -50,7 +50,30 @@ public:
 
         //Mutation
         for(int i=elitismOffset; i<newPopulation.populationSize(); i++){
-            newPopulation.saveTour(i,mutate(newPopulation.getTour(i)));
+            switch(mutationType){
+            case 0:
+            {
+                newPopulation.saveTour(i,mutateRSM(newPopulation.getTour(i)));
+                break;
+            }
+            case 1:
+            {
+                newPopulation.saveTour(i,mutatePSM(newPopulation.getTour(i)));
+                break;
+            }
+            case 2:
+            {
+                newPopulation.saveTour(i,mutateTWORS(newPopulation.getTour(i)));
+                break;
+            }
+            case 3:
+            {
+                newPopulation.saveTour(i,mutateTHRORS(newPopulation.getTour(i)));
+                break;
+            }
+            default:
+                qDebug() << "Programmer is a idiot";
+            }
         }
 
         //Validation
@@ -127,7 +150,7 @@ public slots:
     }
 
 private:
-    static Tour mutate(Tour tour){
+    static Tour mutateRSM(Tour tour){
         double r = 100 * (double)rand()/ RAND_MAX;
 
         if((r) < mutationRate){
@@ -146,14 +169,67 @@ private:
                 tour.setCity(pos1, city2);
             }
             tour.check();
-//            int tourPos1 = (int) (rand() % tour.tourSize());
-//            int tourPos2 = (int) (rand() % tour.tourSize());
-//            City city1 = tour.getCity(tourPos1);
-//            City city2 = tour.getCity(tourPos2);
+        }
+        return tour;
+    }
 
-//            tour.setCity(tourPos2, city1);
-//            tour.setCity(tourPos1, city2);
-//            tour.check();
+    static Tour mutateTWORS(Tour tour){
+        double r = 100 * (double)rand()/ RAND_MAX;
+
+        if((r) < mutationRate){
+            int tourPos1 = rand() % (tour.tourSize()-1);
+            int tourPos2 = 1+tourPos1 + rand() % (tour.tourSize()-tourPos1-1);
+            City city1 = tour.getCity(tourPos1);
+            City city2 = tour.getCity(tourPos2);
+
+            tour.setCity(tourPos2, city1);
+            tour.setCity(tourPos1, city2);
+            tour.check();
+        }
+        return tour;
+    }
+
+    static Tour mutatePSM(Tour tour){
+        double r = 100 * (double)rand()/ RAND_MAX;
+        Tour newTour;
+        if((r) < mutationRate){
+
+            int oldPos = rand() % tour.tourSize();
+            int newPos = rand() % tour.tourSize();
+            City city = tour.getCity(oldPos);
+            newTour.setCity(newPos, city);
+
+            for (int i = 0; i < tour.tourSize(); i++) {
+                if (!(newTour.containsCity(tour.getCity(i)))) {
+                    for (int j = 0; j < newTour.tourSize(); j++) {
+                        if (newTour.getCity(j).getX() == -1) {
+                            newTour.setCity(j, tour.getCity(i));
+                            break;
+                        }
+                    }
+                }
+            }
+            newTour.check();
+            return newTour;
+        }
+        return tour;
+    }
+
+    static Tour mutateTHRORS(Tour tour){
+        double r = 100 * (double)rand()/ RAND_MAX;
+
+        if((r) < mutationRate){
+            int tourPos1 = rand() % (tour.tourSize()-2);
+            int tourPos2 = 1+tourPos1 + (rand() % (tour.tourSize()-tourPos1-2));
+            int tourPos3 = 1+tourPos2 + (rand() % (tour.tourSize()-tourPos2-1));
+            City city1 = tour.getCity(tourPos1);
+            City city2 = tour.getCity(tourPos2);
+            City city3 = tour.getCity(tourPos3);
+
+            tour.setCity(tourPos2, city1);
+            tour.setCity(tourPos3, city2);
+            tour.setCity(tourPos1, city3);
+            tour.check();
         }
         return tour;
     }

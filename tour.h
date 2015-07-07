@@ -84,7 +84,7 @@ public:
     void check(){
         for(int i=0;i<tourSize();i++){
             if(!tour.contains(TourManager::getCity(i)) || (tour.value(i).getX() == -1) || (tour.value(i).getY() == -1)){
-              throw 42;
+              throw std::bad_exception();
             }
         }
     }

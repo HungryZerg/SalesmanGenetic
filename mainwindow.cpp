@@ -8,19 +8,17 @@
 #include <QMessageBox>
 #include <time.h>
 
-
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    //popSizeSpinBox = new QSpinBox();
-    //ui->mainToolBar->addWidget(popSizeSpinBox);
 
+    populationSize = 30;
     srand(static_cast <unsigned> (time(0)));
 
     stopFlag = false;
-    pop = new Population(50,true);
+    pop = new Population(populationSize,true);
     setup();
     model = new PopulationModel(*pop);
     ui->listView->setModel(model);
@@ -59,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->citiesPlot->yAxis->setTickLabels(true);
     ui->citiesPlot->xAxis->grid()->setPen(Qt::SolidLine);
     ui->citiesPlot->yAxis->grid()->setPen(Qt::SolidLine);
+    //ui->citiesPlot->yAxis->setScaleRatio(ui->citiesPlot->xAxis,1.0);
 
     ui->statPlot->setBackground(Qt::gray);
     ui->statPlot->addGraph();
@@ -97,14 +96,17 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tournamentSpinBox->setValue(GeneticEngine::getTournamentSize());
     ui->tournamentSpinBox->setMaximum(pop->populationSize());
     ui->elitismCheckBox->setChecked(GeneticEngine::getElitism());
+    ui->mutTypeComboBox->setCurrentIndex(GeneticEngine::getMutationType());
 
     ui->listView->setWindowTitle("Generation  :");
 
     connect(ui->listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),this, SLOT(drawPath(QItemSelection)));
     connect(ui->runButton, SIGNAL(clicked(bool)),this, SLOT(run()));
+    connect(ui->repopulateButton, SIGNAL(clicked()), this, SLOT(restart()));
     connect(ui->mutationSpinBox, SIGNAL(valueChanged(double)), ge,SLOT(setMutationRate(double)));
-    connect(ui->tournamentSpinBox, SIGNAL(valueChanged(int)), ge, SLOT(setTournamentSize(int)));
+    connect(ui->tournamentSpinBox, SIGNAL(valueChanged(int)), ge, SLOT(setTournamentSize(int)));    
     connect(ui->elitismCheckBox, SIGNAL(toggled(bool)), ge, SLOT(setElitism(bool)));
+    connect(ui->mutTypeComboBox, SIGNAL(currentIndexChanged(int)), ge, SLOT(setMutationType(int)));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
@@ -190,7 +192,7 @@ void MainWindow::setup(){
     for(int i=0;i < r; i++){
         TourManager::addCity(City());
     }
-    pop->repopulate(50);
+    pop->repopulate(populationSize);
     generation = 0;
 }
 
@@ -204,7 +206,7 @@ void MainWindow::randInit(){
         TourManager::addCity(City());
     }
 
-    pop->repopulate(50);
+    pop->repopulate(populationSize);
     generation = 0;
 
     curve->clearData();
@@ -221,6 +223,34 @@ void MainWindow::randInit(){
     }
 
     ui->citiesPlot->replot();
+    //ui->listView->clearSelection();
+
+    ui->statPlot->graph(0)->clearData();
+    ui->statPlot->graph(1)->clearData();
+    ui->statPlot->replot();
+}
+
+void MainWindow::restart(){
+    //QCPCurve *curve = qobject_cast<QCPCurve*>(ui->citiesPlot->plottable(0));
+
+    pop->repopulate(populationSize);
+    generation = 0;
+
+//    curve->clearData();
+//    for(int i=0; i<TourManager::numberOfCities(); i++){
+//        int x = TourManager::getCity(i).getX();
+//        int y = TourManager::getCity(i).getY();
+//        curve->addData(x, y);
+//    }
+//    curve->addData(TourManager::getCity(0).getX(), TourManager::getCity(0).getY());
+
+    for(int populationIndex=0; populationIndex<pop->populationSize();populationIndex++){
+        QModelIndex index = model->index(populationIndex, 0, QModelIndex());
+        model->setData(index, pop->getTour(populationIndex), Qt::EditRole);
+    }
+
+    ui->citiesPlot->replot();
+    drawPath(ui->listView->selectionModel()->selection());
     //ui->listView->clearSelection();
 
     ui->statPlot->graph(0)->clearData();
