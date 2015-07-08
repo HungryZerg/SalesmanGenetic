@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <QString>
+#include <QHash>
 
 class City
 {
@@ -29,6 +30,14 @@ public:
         return this->y;
     }
 
+    int getX() const{
+        return this->x;
+    }
+
+    int getY()const{
+        return this->y;
+    }
+
     double distanceTo(City city){
         int xDistance = abs(getX() - city.getX());
         int yDistance = abs(getY() - city.getY());
@@ -46,9 +55,22 @@ public:
         }
     }
 
+    bool operator ==(City city) const {
+        if(this->x==city.getX() && this->y==city.getY() && (this->getX() != -1)){
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
     /*Qstring toString(){
         return getX()+", "+getY();
     }*/
 };
+
+inline uint qHash(const City &key, uint seed){
+    return qHash(key.getX(), seed) ^ key.getY();
+}
 
 #endif // CITY_H

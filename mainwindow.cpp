@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     populationSize = 30;
+    ui->popSizeSpinBox->setValue(populationSize);
     srand(static_cast <unsigned> (time(0)));
 
     stopFlag = false;
@@ -97,6 +98,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->tournamentSpinBox->setMaximum(pop->populationSize());
     ui->elitismCheckBox->setChecked(GeneticEngine::getElitism());
     ui->mutTypeComboBox->setCurrentIndex(GeneticEngine::getMutationType());
+    ui->crossTypeComboBox->setCurrentIndex(GeneticEngine::getCrossoverType());
+
 
     ui->listView->setWindowTitle("Generation  :");
 
@@ -106,7 +109,11 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->mutationSpinBox, SIGNAL(valueChanged(double)), ge,SLOT(setMutationRate(double)));
     connect(ui->tournamentSpinBox, SIGNAL(valueChanged(int)), ge, SLOT(setTournamentSize(int)));    
     connect(ui->elitismCheckBox, SIGNAL(toggled(bool)), ge, SLOT(setElitism(bool)));
+
     connect(ui->mutTypeComboBox, SIGNAL(currentIndexChanged(int)), ge, SLOT(setMutationType(int)));
+    connect(ui->crossTypeComboBox, SIGNAL(currentIndexChanged(int)), ge, SLOT(setCrossoverType(int)));
+
+    connect(ui->popSizeSpinBox, SIGNAL(valueChanged(int)), this, SLOT(setPopulationSize(int)));
 
     connect(ui->actionAbout_Qt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(save()));
@@ -114,6 +121,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionLoad, SIGNAL(triggered()), this, SLOT(open()));
 
 
+    readSettings();
     //qDebug()<<pop->getFittest().getDistance();
 }
 
@@ -192,7 +200,8 @@ void MainWindow::setup(){
     for(int i=0;i < r; i++){
         TourManager::addCity(City());
     }
-    pop->repopulate(populationSize);
+    pop = new Population(populationSize, true);
+    //pop->repopulate(populationSize);
     generation = 0;
 }
 
@@ -206,7 +215,10 @@ void MainWindow::randInit(){
         TourManager::addCity(City());
     }
 
-    pop->repopulate(populationSize);
+    delete pop;
+    pop = new Population(populationSize, true);
+    model->setPopulation(*pop);
+    //pop->repopulate(populationSize);
     generation = 0;
 
     curve->clearData();
@@ -233,7 +245,10 @@ void MainWindow::randInit(){
 void MainWindow::restart(){
     //QCPCurve *curve = qobject_cast<QCPCurve*>(ui->citiesPlot->plottable(0));
 
-    pop->repopulate(populationSize);
+    //pop->repopulate(populationSize);
+    delete pop;
+    pop = new Population(populationSize, true);
+    model->setPopulation(*pop);
     generation = 0;
 
 //    curve->clearData();
@@ -325,7 +340,11 @@ void MainWindow::loadFile(const QString &fileName){
         City city(i.section(" ",0,0).toInt(), i.section(" ",1,1).toInt());
         TourManager::addCity(city);
     }
-    pop->repopulate(50);
+
+    delete pop;
+    pop = new Population(populationSize, true);
+    model->setPopulation(*pop);
+    //pop->repopulate(populationSize);
     generation = 0;
 
     curve->clearData();
@@ -352,6 +371,40 @@ void MainWindow::loadFile(const QString &fileName){
 #endif
 
     statusBar()->showMessage(tr("File loaded"), 2000);
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings("settings.ini", QSettings::IniFormat);
+
+    settings.beginGroup("Main");
+    settings.setValue("population_size", populationSize);
+    settings.setValue("elitism", GeneticEngine::getElitism());
+    settings.setValue("tournament_size", GeneticEngine::getTournamentSize());
+    settings.setValue("crossover_type", GeneticEngine::getCrossoverType());
+    settings.setValue("mutation_type", GeneticEngine::getMutationType());
+    settings.setValue("mutation_rate", GeneticEngine::getMutationRate());
+    settings.endGroup();
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings("settings.ini", QSettings::IniFormat);
+
+    settings.beginGroup("Main");
+    ui->popSizeSpinBox->setValue(settings.value("population_size").toInt());
+    ui->elitismCheckBox->setChecked(settings.value("elitism").toBool());
+    ui->tournamentSpinBox->setValue(settings.value("tournament_size").toInt());
+    ui->crossTypeComboBox->setCurrentIndex(settings.value("crossover_type").toInt());
+    ui->mutTypeComboBox->setCurrentIndex(settings.value("mutation_type").toInt());
+    ui->mutationSpinBox->setValue(settings.value("mutation_rate").toDouble());
+    settings.endGroup();
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
+    event->accept();
 }
 
 MainWindow::~MainWindow()

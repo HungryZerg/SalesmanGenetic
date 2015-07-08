@@ -14,8 +14,8 @@
    <string>Travelling salesman</string>
   </property>
   <property name="windowIcon">
-   <iconset>
-    <normaloff>salesman.png</normaloff>salesman.png</iconset>
+   <iconset resource="application.qrc">
+    <normaloff>:/images/salesman.png</normaloff>:/images/salesman.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -52,10 +52,31 @@
        </layout>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,1,0,0">
+       <layout class="QVBoxLayout" name="verticalLayout_3" stretch="0,0,0,0,1,0,0">
         <property name="sizeConstraint">
          <enum>QLayout::SetFixedSize</enum>
         </property>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Population size</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="popSizeSpinBox">
+            <property name="minimum">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
         <item>
          <widget class="QPushButton" name="repopulateButton">
           <property name="text">
@@ -103,6 +124,39 @@
               <property name="minimum">
                <number>1</number>
               </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLabel" name="crossTypeLabel">
+              <property name="text">
+               <string>Crossover type</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="crossTypeComboBox">
+              <property name="currentIndex">
+               <number>2</number>
+              </property>
+              <item>
+               <property name="text">
+                <string>Ordered</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Cycle</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Position based</string>
+               </property>
+              </item>
              </widget>
             </item>
            </layout>
@@ -236,7 +290,7 @@
      <x>0</x>
      <y>0</y>
      <width>711</width>
-     <height>19</height>
+     <height>18</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -279,8 +333,8 @@
   </widget>
   <action name="actionSave">
    <property name="icon">
-    <iconset>
-     <normaloff>save.png</normaloff>save.png</iconset>
+    <iconset resource="application.qrc">
+     <normaloff>:/images/save.png</normaloff>:/images/save.png</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -296,8 +350,8 @@
   </action>
   <action name="actionRandom_Initialization">
    <property name="icon">
-    <iconset>
-     <normaloff>roll.png</normaloff>roll.png</iconset>
+    <iconset resource="application.qrc">
+     <normaloff>:/images/roll.png</normaloff>:/images/roll.png</iconset>
    </property>
    <property name="text">
     <string>Random</string>
@@ -313,8 +367,8 @@
   </action>
   <action name="actionLoad">
    <property name="icon">
-    <iconset>
-     <normaloff>open.png</normaloff>open.png</iconset>
+    <iconset resource="application.qrc">
+     <normaloff>:/images/open.png</normaloff>:/images/open.png</iconset>
    </property>
    <property name="text">
     <string>Load</string>
@@ -330,7 +384,9 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="application.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionExit</sender>

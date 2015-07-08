@@ -82,6 +82,10 @@ public:
         : QAbstractListModel(parent), pop(population)
     {}
 
+    void setPopulation(Population population){
+        pop = population;
+    }
+
     int rowCount(const QModelIndex &parent = QModelIndex()) const
     {
         return pop.populationSize();

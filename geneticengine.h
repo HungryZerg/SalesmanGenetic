@@ -9,6 +9,7 @@ class GeneticEngine: public QObject{
     Q_OBJECT
 
     static int mutationType;
+    static int crossoverType;
 
     static double mutationRate;
     static int tournamentSize;
@@ -42,9 +43,26 @@ public:
             Tour parent2 = tournamentSelection(pop);
             //Tour parent1 = rouletteSelection(pop, probs);
             //Tour parent2 = rouletteSelection(pop, probs);
-
-            Tour child = crossover(parent1, parent2);
-
+            Tour child;
+            switch(crossoverType){
+            case 0:
+            {
+                child = crossoverOX(parent1, parent2);
+                break;
+            }
+            case 1:
+            {
+                child = crossoverCycle(parent1, parent2);
+                break;
+            }
+            case 2:
+            {
+                child = crossoverPOS(parent1, parent2);
+                break;
+            }
+            default:
+                qDebug() << "Programmer is a idiot";
+            }
             newPopulation.saveTour(i, child);
         }
 
@@ -84,7 +102,7 @@ public:
         return newPopulation;
     }
 
-    static Tour crossover(Tour parent1, Tour parent2){
+    static Tour crossoverOX(Tour parent1, Tour parent2){
         Tour child;
 
         int startPos = (int)(rand() % parent1.tourSize());
@@ -115,6 +133,116 @@ public:
         return child;
     }
 
+    static Tour crossoverCycle(Tour parent1, Tour parent2){
+        Tour child;
+        int j;
+        child.setCity(0, parent1.getCity(0));
+        int i = 0;
+        do  {
+            j = parent1.indexCity(parent2.getCity(i));
+            child.setCity(j, parent1.getCity(j));
+            i = j;
+        } while(!child.containsCity(parent2.getCity(i)));
+
+        for(int k=0; k<child.tourSize();k++){
+            if(child.getCity(k).getX() == -1){
+                child.setCity(k, parent2.getCity(k));
+            }
+        }
+
+        child.check();
+        return child;
+    }
+
+    static Tour crossoverPOS(Tour parent1, Tour parent2){
+        Tour child;
+
+        QVector<int> sel;
+        int s = 1+ rand() % (parent1.tourSize()-1);
+        for(int i=0; i<s; i++){
+            int r = rand() % parent1.tourSize();
+            if(!sel.contains(r))
+                sel.append(r);
+        }
+
+
+        foreach(int cInd, sel) {
+           child.setCity(cInd, parent2.getCity(cInd));
+        }
+
+        for (int i = 0; i < parent1.tourSize(); i++) {
+            if (!(child.containsCity(parent1.getCity(i)))) {
+                for (int j = 0; j < child.tourSize(); j++) {
+                    if (child.getCity(j).getX() == -1) {
+                        child.setCity(j, parent1.getCity(i));
+                        break;
+                    }
+                }
+            }
+        }
+        child.check();
+        return child;
+    }
+
+    static Tour crossoverER(Tour parent1, Tour parent2){
+        Tour child;
+        QHash< City, QVector<City> > edge;
+
+        for(int i=0; i<parent1.tourSize(); i++){
+            QVector<City> map;
+            int par2i = parent2.indexCity(parent1.getCity(i));
+
+            if((i+1)>=parent1.tourSize())
+                map.append(parent1.getCity(0));
+            else
+                map.append(parent1.getCity(i+1));
+
+            if((i-1)<0)
+                map.append(parent1.getCity(parent1.tourSize()-1));
+            else
+                map.append(parent1.getCity(i-1));
+
+            if((par2i+1)>=parent1.tourSize()){
+                if(!map.contains(parent2.getCity(0)))
+                    map.append(parent2.getCity(0));
+            }
+            else {
+                if(!map.contains(parent2.getCity(par2i+1)))
+                    map.append(parent2.getCity(par2i+1));
+            }
+
+            if((par2i-1)<0){
+                if(!map.contains(parent2.getCity(parent2.tourSize()-1)))
+                    map.append(parent2.getCity(parent2.tourSize()-1));
+            }
+            else {
+                if(!map.contains(parent2.getCity(par2i-1)))
+                    map.append(parent2.getCity(par2i-1));
+            }
+
+            edge.insert(parent1.getCity(i), map);
+        }
+
+        if ((edge.value(parent1.getCity(0)).size()) > edge.value(parent2.getCity(0)).size())
+            child.setCity(0, parent2.getCity(0));
+        else
+            child.setCity(0, parent1.getCity(0));
+
+        QHash<City, QVector<City> >::iterator it = edge.begin();
+        while (it != edge.end()) {
+            if(it.value().contains(child.getCity(0)))
+                it.value().removeOne(child.getCity(0));
+            ++it;
+        }
+
+
+        for(int i=0; i<child.tourSize(); i++){
+            if (edge.value(parent1.getCity(i)).size());
+        }
+        return parent1;
+    }
+
+
     static double getMutationRate(){
         return mutationRate;
     }
@@ -132,6 +260,10 @@ public:
         return mutationType;
     }
 
+    static int getCrossoverType(){
+        return crossoverType;
+    }
+
 public slots:
     static void setMutationRate(double rate){
         mutationRate = rate;
@@ -147,6 +279,10 @@ public slots:
 
     static void setMutationType(int type){
         mutationType = type;
+    }
+
+    static void setCrossoverType(int type){
+        crossoverType = type;
     }
 
 private:
@@ -259,9 +395,10 @@ private:
 //        while(notAccepted){
 //            index = rand() % pop.populationSize();
 //            r = (double)rand()/RAND_MAX;
+//            qDebug() << pop.getTour(index).getFitness()/best;
 //            if( r < (pop.getTour(index).getFitness()/best) ){ notAccepted = false; }
 //        }
-//        return pop.getTour(index);
+        //return pop.getTour(index);
     }
 };
 

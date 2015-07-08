@@ -34,6 +34,10 @@ private:
     bool saveFile(const QString &fileName);
     void loadFile(const QString &fileName);
 
+    void writeSettings();
+    void readSettings();
+    void closeEvent(QCloseEvent *event);
+
     void setup();
 
     bool stopFlag;
