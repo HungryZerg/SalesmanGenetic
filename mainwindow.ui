@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="application.qrc">
-    <normaloff>:/images/salesman.png</normaloff>:/images/salesman.png</iconset>
+    <normaloff>:/images/R531.png</normaloff>:/images/R531.png</iconset>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QHBoxLayout" name="horizontalLayout_3">
@@ -140,7 +140,7 @@
             <item>
              <widget class="QComboBox" name="crossTypeComboBox">
               <property name="currentIndex">
-               <number>2</number>
+               <number>0</number>
               </property>
               <item>
                <property name="text">
@@ -155,6 +155,11 @@
               <item>
                <property name="text">
                 <string>Position based</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Edge recombination</string>
                </property>
               </item>
              </widget>

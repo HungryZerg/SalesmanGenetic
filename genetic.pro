@@ -31,4 +31,9 @@ FORMS    += mainwindow.ui
 RESOURCES += \
     application.qrc
 
-QMAKE_LFLAGS += -static -static-libgcc
+TRANSLATIONS = genetic_ru_RU.ts
+
+# win32:RC_FILE += application.rc
+win32:RC_ICONS += 531.ico
+
+# QMAKE_LFLAGS += -static -static-libgcc

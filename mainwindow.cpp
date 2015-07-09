@@ -65,9 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->statPlot->addGraph();
     ui->statPlot->graph(0)->setPen(QPen(Qt::red));
     ui->statPlot->graph(1)->setPen(QPen(Qt::blue));
-    ui->statPlot->graph(0)->setName("Best");
+    ui->statPlot->graph(0)->setName(tr("Best"));
     ui->statPlot->graph(0)->addToLegend();
-    ui->statPlot->graph(1)->setName("Average");
+    ui->statPlot->graph(1)->setName(tr("Average"));
     ui->statPlot->graph(1)->addToLegend();
     ui->statPlot->xAxis->setRangeLower(0);
     QFont legendFont = font();
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->crossTypeComboBox->setCurrentIndex(GeneticEngine::getCrossoverType());
 
 
-    ui->listView->setWindowTitle("Generation  :");
+    ui->listView->setWindowTitle(tr("Generation  :"));
 
     connect(ui->listView->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),this, SLOT(drawPath(QItemSelection)));
     connect(ui->runButton, SIGNAL(clicked(bool)),this, SLOT(run()));
@@ -156,8 +156,8 @@ void MainWindow::evolve(){
 }
 
 void MainWindow::run(){
-    ui->statusBar->showMessage("Processing...");
-    ui->runButton->setText("Stop");
+    ui->statusBar->showMessage(tr("Processing..."));
+    ui->runButton->setText(tr("Stop"));
 
     ui->mainToolBar->setEnabled(false);
     ui->menuBar->setEnabled(false);
@@ -182,7 +182,7 @@ void MainWindow::run(){
     }
 
     stopFlag = false;
-    ui->runButton->setText("Run");
+    ui->runButton->setText(tr("Run"));
     ui->runButton->disconnect();
     connect(ui->runButton, SIGNAL(clicked(bool)),this, SLOT(run()));
     foreach( QWidget* w, list )
@@ -392,12 +392,38 @@ void MainWindow::readSettings()
     QSettings settings("settings.ini", QSettings::IniFormat);
 
     settings.beginGroup("Main");
-    ui->popSizeSpinBox->setValue(settings.value("population_size").toInt());
-    ui->elitismCheckBox->setChecked(settings.value("elitism").toBool());
-    ui->tournamentSpinBox->setValue(settings.value("tournament_size").toInt());
-    ui->crossTypeComboBox->setCurrentIndex(settings.value("crossover_type").toInt());
-    ui->mutTypeComboBox->setCurrentIndex(settings.value("mutation_type").toInt());
-    ui->mutationSpinBox->setValue(settings.value("mutation_rate").toDouble());
+
+    if(settings.value("population_size").isNull()){
+        ui->popSizeSpinBox->setValue(30);
+    } else {
+        ui->popSizeSpinBox->setValue(settings.value("population_size").toInt());
+    }
+    restart();
+    if(settings.value("elitism").isNull()){
+        ui->elitismCheckBox->setChecked(true);
+    } else {
+        ui->elitismCheckBox->setChecked(settings.value("elitism").toBool());
+    }
+    if(settings.value("tournament_size").isNull()){
+        ui->tournamentSpinBox->setValue(3);
+    } else {
+        ui->tournamentSpinBox->setValue(settings.value("tournament_size").toInt());
+    }
+    if(settings.value("crossover_type").isNull()){
+        ui->crossTypeComboBox->setCurrentIndex(3);
+    } else {
+        ui->crossTypeComboBox->setCurrentIndex(settings.value("crossover_type").toInt());
+    }
+    if(settings.value("mutation_type").isNull()){
+        ui->mutTypeComboBox->setCurrentIndex(0);
+    } else {
+        ui->mutTypeComboBox->setCurrentIndex(settings.value("mutation_type").toInt());
+    }
+    if(settings.value("mutation_rate").isNull()){
+        ui->mutationSpinBox->setValue(2.5);
+    } else {
+        ui->mutationSpinBox->setValue(settings.value("mutation_rate").toDouble());
+    }
     settings.endGroup();
 }
 

@@ -29,14 +29,18 @@ public:
 
         //Crossover
         double sumFitness = 0;
+        double best = pop.getFittest().getDistance();
+        QVector<double> normFitness;
         for(int i=0; i<pop.populationSize(); i++){
-            sumFitness += pop.getTour(i).getFitness();
+            normFitness.append(1/(pop.getTour(i).getDistance()-best+1));
+            sumFitness += normFitness.at(i);
         }
         QVector<double> *probs = new QVector<double>(pop.populationSize());
-        probs->replace(0,pop.getTour(0).getFitness()/sumFitness);
+        probs->replace(0,normFitness.at(0)/sumFitness);
         for(int i=1; i<pop.populationSize(); i++){
-            probs->replace(i,probs->value(i-1) + pop.getTour(i).getFitness()/sumFitness);
+            probs->replace(i,probs->value(i-1) + normFitness.at(i)/sumFitness);
         }
+        pop.sort();
 
         for(int i=elitismOffset; i<newPopulation.populationSize(); i++){
             Tour parent1 = tournamentSelection(pop);
@@ -58,6 +62,11 @@ public:
             case 2:
             {
                 child = crossoverPOS(parent1, parent2);
+                break;
+            }
+            case 3:
+            {
+                child = crossoverER(parent1, parent2);
                 break;
             }
             default:
@@ -236,10 +245,43 @@ public:
         }
 
 
-        for(int i=0; i<child.tourSize(); i++){
-            if (edge.value(parent1.getCity(i)).size());
+        for(int i=1; i<child.tourSize(); i++){
+            City currentCity=child.getCity(i-1);
+            if (edge.value(currentCity).isEmpty()) {
+                edge.remove(currentCity);
+                currentCity = edge.keys().value(rand() % edge.size());
+                child.setCity(i, currentCity);
+                QHash<City, QVector<City> >::iterator it = edge.begin();
+                while (it != edge.end()) {
+                    if(it.value().contains(currentCity))
+                        it.value().removeOne(currentCity);
+                    ++it;
+                }
+            } else {
+                QVector<City> currentCityList = edge[currentCity];
+                City minCity = currentCityList.value(0);
+                for(int n=1; n<currentCityList.size(); n++){
+                    if(edge[currentCityList.value(n)].size() < edge[minCity].size()){
+                        minCity=currentCityList.value(n);
+                    } else {
+                        if(edge[currentCityList.value(n)].size() == edge[minCity].size()){
+                            if((rand() % 2) == 1)
+                                minCity=currentCityList.value(n);
+                        }
+                    }
+                }
+                child.setCity(i, minCity);
+                edge.remove(currentCity);
+                QHash<City, QVector<City> >::iterator it = edge.begin();
+                while (it != edge.end()) {
+                    if(it.value().contains(minCity))
+                        it.value().removeOne(minCity);
+                    ++it;
+                }
+            }
         }
-        return parent1;
+        child.check();
+        return child;
     }
 
 
@@ -388,6 +430,7 @@ private:
                 return pop.getTour(i);
             }
         }
+        return pop.getTour(pop.populationSize()-1);
 //        double best = pop.getFittest().getFitness();
 //        int index;
 //        double r;
@@ -398,7 +441,7 @@ private:
 //            qDebug() << pop.getTour(index).getFitness()/best;
 //            if( r < (pop.getTour(index).getFitness()/best) ){ notAccepted = false; }
 //        }
-        //return pop.getTour(index);
+//        return pop.getTour(index);
     }
 };
 

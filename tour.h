@@ -92,6 +92,10 @@ public:
             }
         }
     }
+
+    bool operator<(const Tour &tour) const{
+        return fitness<tour.fitness;
+    }
 };
 
 Q_DECLARE_METATYPE(Tour);

@@ -64,6 +64,10 @@ public:
         return average;
     }
 
+    void sort(){
+        qSort(tours);
+    }
+
     int populationSize(){
         return tours.size();
     }
@@ -99,7 +103,7 @@ public:
                 return QVariant();
 
             if (role == Qt::DisplayRole)
-                return QString("Tour")+QString::number(index.row())+" distance="+QString::number(pop.getTour(index.row()).getDistance());
+                return QString(tr("Tour"))+QString::number(index.row())+tr(" distance=")+QString::number(pop.getTour(index.row()).getDistance());
             if (role == Qt::UserRole)
                 return QVariant::fromValue(pop.getTour(index.row()));
             else {

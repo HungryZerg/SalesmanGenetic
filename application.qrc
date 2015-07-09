@@ -4,5 +4,9 @@
         <file>open.png</file>
         <file>roll.png</file>
         <file>salesman.png</file>
+        <file>R531.png</file>
+    </qresource>
+    <qresource prefix="/translations">
+        <file>genetic_ru_RU.qm</file>
     </qresource>
 </RCC>
